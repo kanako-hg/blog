@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { auth, db } from "../firebase";
 import dayjs from "dayjs";
 
@@ -9,8 +16,9 @@ const Home = () => {
 
   useEffect(() => {
     const getPosts = async () => {
-      const data = await getDocs(collection(db, "posts"));
-      // console.log(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      const dataTemp = collection(db, "posts");
+      const q = query(dataTemp, orderBy("time", "desc"));
+      const data = await getDocs(q);
       setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getPosts();
@@ -29,9 +37,11 @@ const Home = () => {
               <h1>{post.title}</h1>
             </div>
             <div className="postTextContainer">{post.postsText}</div>
+            <div className="postingTime">
+              <h5>{dayjs(post.time.toDate()).format("YYYY/MM/DD a hh:mm")}</h5>
+            </div>
             <div className="nameAndDeleteButton">
               <h3>{post.author.username}</h3>
-              <h3>{dayjs(post.time.toDate()).format("YYYY/MM/DD a hh:mm")}</h3>
               {post.author.id === auth.currentUser?.uid && (
                 <button
                   onClick={() => {

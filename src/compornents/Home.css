@@ -31,6 +31,10 @@
   width: 100%;
 }
 
+.postContents .postingTime {
+  text-align: right;
+}
+
 .postContents .nameAndDeleteButton {
   display: flex;
   align-items: center;
